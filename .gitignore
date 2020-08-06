@@ -1,6 +1,5 @@
 node_modules/
 temp/
 log/
-lnfaucet.db
 package-lock.json
 log.txt

@@ -33,7 +33,7 @@
 
 <div class="container mt-4">
 
-    <% if(data.content.image != null){ %>
+    <% if(typeof data.content !== 'undefined' && data.content.image != null){ %>
       <a id="banner-ad-banner" href="<%= data.content.link %>"  target="_blank">
           <img src="images/<%= data.content.image %>" class="img-fluid m-2" style="height:100px;">
       </a>
@@ -180,7 +180,7 @@
                     <li>
                         <%= data.history[i].count %>___
                             <a href="https://1ml.com/node/<%= data.history[i].id %>" target="_blank"><%= data.history[i].alias %></a>___
-                        <%= moment(data.history[i].message).fromNow() %>
+                        <%= moment(data.history[i].created_at).fromNow() %>
                     </li>
                 <% }%>
                 </ul>
