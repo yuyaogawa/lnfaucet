@@ -1,0 +1,236 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script crossorigin="anonymous" src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="></script>
+<script crossorigin="anonymous" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script src="js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js"></script>
+<link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" rel="stylesheet">
+<link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet">
+<link crossorigin="anonymous" href="css/style.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/98.css">
+
+<!-- Google reCAPTCHA -->
+<script src="https://www.google.com/recaptcha/api.js?render=API-KEY"></script>
+
+</head>
+<body>
+
+<nav class="navbar shadow-sm">
+<div class="container">
+  <label>
+  <a class="navbar-brand mr-auto mr-lg-4" href="./" style="margin-right: auto!important;">
+  Lightning Faucet <span class="badge badge-primary" style="color:white;font-size:10px;">β版</span></a>
+  </label>
+
+  <button type="button" data-toggle="modal" data-target="#addNewStoreModal">
+  add new ad!
+  </button>
+
+</div>
+</nav>
+
+<div class="container mt-4">
+
+    <% if(data.content.image != null){ %>
+      <a id="banner-ad-banner" href="<%= data.content.link %>"  target="_blank">
+          <img src="images/<%= data.content.image %>" class="img-fluid m-2" style="height:100px;">
+      </a>
+    <% } %>
+
+   <div class="row mt-5">
+      <div class="col-md-2">
+        <div class="modal fade show" id="addNewStoreModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-modal="true" style="padding-right: 17px; display: none;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="title-bar">
+                          <div class="title-bar-text">add new ad!</div>
+                          <div class="title-bar-controls">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              </button>
+                          </div>
+                        </div>
+                        <div class="window-body modal-body" id="formModal">
+
+                            <form id="formTeste" >
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Name*</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" id="nameInput" placeholder="YYBazaar" name="name" required="">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">URL*</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" id="urlInput" placeholder="https://yybazaar.com" name="URL" required="">
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group row">
+                                  <label class="col-sm-2 col-form-label">Image*</label>
+                                  <!-- https://codepen.io/siremilomir/pen/jBbQGo -->
+                                  <div class="image-upload">
+                                    <div class="image-edit">
+                                      <input id="imageUpload" type="file" name="file" accept=".png,.jpg,.gif" required="">
+                                      <label for="imageUpload"></label>
+                                    </div>
+                                    <div class="image-preview">
+                                      <!--img id="imagePreview2" src="#" class="img-fluid"-->
+                                      <div id="imagePreview" class="img-fluid" style="background-image: url();">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="col-auto">
+                                    <div class="form-check mb-2">
+                                        <input type="checkbox" id="example1" required="">
+                                        <label for="example1">* I agree that the ad may be removed later if it disables lightning payments.</label>
+                                        <!--input class="form-check-input" type="checkbox" id="terms" required="">
+                                        <label class="form-check-label" for="autoSizingCheck2">
+                                            *I agree that the ad may be removed later if it disables lightning payments.
+                                        </label-->
+                                    </div>
+                                </div>
+
+                                <button id="submissionButton"> Post ad: 2000 sat </button>
+                                <br>
+                                <a id="formAnswer"> </a>
+                            </form>
+
+                            <textarea id="invoiceareaForStore" class="form-control" style="display:none"></textarea>
+                            <img id="qrcodeAddStore" src="" style="display:none" alt="qr code">
+
+                        </div>
+
+              <div class="form-group make-payment collapse hide" style="">
+                <div class="input-group">
+                  <input class="add-comment-invoice form-control form-control-lg" id="invoice" type="readonly" value="Loading Lightning invoice...">
+                  <div class="input-group-append">
+                      <button class="copy-invoice" onclick="clickedCopyInvoice()" data-target=".add-comment-invoice" type="button"><i class="fas fa-fw fa-copy"></i><span class="pl-1 text"></span></button>
+                      <button class="show-qr-code collapsed" data-target=".qr-codes" data-toggle="collapse" type="button" aria-expanded="false"><i class="fas fa-fw fa-qrcode"></i></button>
+                      <button class="check-payment" type="submit"><i class="fas fa-fw fa-sync-alt"></i></button>
+                  </div>
+                </div>
+              </div>
+              <div class="qr-codes collapse hide" style="">
+                  <div class="row mt-2">
+                      <div class="col">
+                          <div class="bg-primary card">
+                              <div class="card-body text-center">
+                                  <h5 class="card-title text-dark">
+                                      <i class="fas fa-bolt mr-2"></i>
+                                      <span>Payment</span>
+                                  </h5>
+                                  <p class="card-text payment-qrcode">
+                                    <a href="lightning:">
+                                      <img crossorigin="anonymous" src="" id="qr" width="300" height="300" style="width: 300px; height: auto; max-width: 100%;">
+                                    </a>
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="peer collapse hide" style="overflow: hidden; text-overflow: ellipsis;">
+                <small style="white-space: nowrap;">
+                  <span class="peer-label">Peer:</span>
+                  <a class="peer-address text-primary" id="peer_address">033613d280de1eba995c7545e93caf76cfba41bef88c2d6732a67ce06c168b3acb@light.yuyaogawa.com:9735</a>
+                </small>
+              </div>
+
+                        <div class="modal-footer">
+                            <button type="button" data-dismiss="modal">Close</button>
+                            <button type="button" id="finalButtonFormModal" style="display:none">Fill&amp;Press 'Add Store'</button>
+                        </div>
+                    </div>
+                </div>
+        </div>
+      </div>
+      <div class="col-md-7 main-column">
+
+         <label><h6><i class="fas fa-bolt mr-2"></i><strong>Lightning Request: Create invoice with <b><span style="color:red;">100 satoshis</span></b> and get them!</strong></h6></label>
+         <label> You can claim<b><span style="color:red;"> once a day.</span></b></label>
+         <label>Let us know what you think at <a class="text-muted" href="https://twitter.com/ogw_yuya" target="_blank">here</a></label>
+            <div id="send" class="">
+               <div class="input-group">
+                  <input class="form-control" id="payout-invoice" placeholder="lnbc2u1..." type="text" value="">
+                  <button onclick="payinvoice();">
+                     <i class="fa-asterisk fa-fw fa-spin fas looking-up-invoice" hidden=""></i>
+                     <i class="fa-bolt fa-fw fas not-looking-up-invoice"></i>
+                     <i class="fa-frown fa-fw fas has-invoice-problem text-danger" hidden=""></i>
+                  </button>
+               </div>
+               <div class="alert alert-danger collapse hide bad-invoice payout-failure">Couldn't read this invoice. Try a different one?</div>
+               <div class="alert alert-danger collapse hide already-claimed payout-failure">You've already claimed within 24hours. Try it again later.</div>
+               <div class="alert alert-danger collapse hide excessive-payout payout-failure">Oops, this invoice is for too much: use a smaller value?</div>
+               <div class="alert alert-danger collapse hide generic payout-failure">Payout Failed. Try it again later.</div>
+            </div>
+         <!--div>Separator Start</div-->
+         <div class="mb-4 show-on-start transactions-break"></div>
+         <!--div>Separator End</div-->
+         <div>
+            <% if (typeof data !== 'undefined') { %>
+                <ul class="tree-view">
+                <li>Claims___NodeId___Date<li>
+                <% for(let i= 0; i < data.history.length; i++) { %>
+                    <li>
+                        <%= data.history[i].count %>___
+                            <a href="https://1ml.com/node/<%= data.history[i].id %>" target="_blank"><%= data.history[i].alias %></a>___
+                        <%= moment(data.history[i].message).fromNow() %>
+                    </li>
+                <% }%>
+                </ul>
+            <% }%>
+         </div>
+      </div>
+      <div class="col-md-3">
+      </div>
+   </div>
+
+<footer class="pt-4 my-md-5 pt-md-5 border-top">
+        <div class="row">
+          <div class="col-12 col-md">
+            <img class="mb-2" src="./images/logo1.png" alt="" width="24" height="24">
+            <label class="d-block mb-3 text-muted">© 2018-2020</label>
+          </div>
+          <div class="col-6 col-md">
+            <label>
+            <h5>Donate</h5>
+
+            <!-- Beginning of spotlight.soy Button -->
+            <div id="spotlight-button" data-dest="1" data-user="Yuya"></div>
+            <script src="https://spotlight.soy/js/tip.js" type="text/javascript"></script>
+            <!-- End of spotlight.soy Button -->
+            </label>
+          </div>
+          <div class="col-6 col-md">
+            <label>
+            <h5>Other Lapps</h5>
+            <ul class="list-unstyled text-small">
+              <!--li><a class="text-muted" href="../board" target="_blank">Lightning Board</a></li-->
+              <li><a class="text-muted" href="https://spotlight.soy" target="_blank">Spotlight</a></li>
+              <li><a class="text-muted" href="https://yybazaar.com" target="_blank">YYBazaar</a></li>
+              <li><a class="text-muted">Lightning Tweet(Out of service)</a></li>
+            </ul>
+            </label>
+          </div>
+          <div class="col-6 col-md">
+            <label>
+            <h5>About</h5>
+            <ul class="list-unstyled text-small">
+              <li><a class="text-muted" href="https://yuyaogawa.com" target="_blank">Team</a></li>
+            </ul>
+            <ul class="list-unstyled text-small">
+              <li><a class="text-muted" href="https://twitter.com/ogw_yuya" target="_blank">Twitter</a></li>
+            </ul>
+            </label>
+          </div>
+        </div>
+</footer>
+</div>
+</body>
+</html>
