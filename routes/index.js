@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
             if(err) throw err;
             content = rows;
         });
-        const query_history = 'select count(id) as count, id, IFNULL(node.alias, substr(id,0,30)) as alias, invoice.created_at from invoice ' + 
+        const query_history = 'select count(id) as count, id, IFNULL(node.alias, substr(id,0,30)) as alias, max(invoice.created_at) as created_at from invoice ' + 
                     'left outer join node on invoice.id == node.nodeid ' +
                     'group by id ORDER BY invoice.created_at DESC limit 20;';
         db.all(query_history, function(err, rows) {
